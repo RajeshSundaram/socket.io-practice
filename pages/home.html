@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket Home</title>
+    <style>
+      input {
+        width: 80vw;
+        height: 3em;
+        border: 2px solid blue;
+      }
+      .bottom-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      #submit {
+        background-color: white;
+        color: black;
+        border: 2px solid #4caf50;
+      }
+      #messages-list .message-item {
+        color: blue;
+        font-size: 1.4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="messages">
+      <ul id="messages-list"></ul>
+    </div>
+    <div class="bottom-bar">
+      <input type="text" id="message" />
+      <button id="submit">Send</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const messageList = document.getElementById("messages-list");
+      var socket = io();
+      socket.on("message-pull", (data) => {
+        data.forEach((it) => {
+          const li = document.createElement("li");
+          li.className = "message-item";
+          li.innerText = it;
+          messageList.append(li);
+        });
+      });
+      const emitMessage = () => {
+        const message = document.getElementById("message").value;
+        socket.emit("message-push", message);
+      };
+      document.getElementById("message").addEventListener("keyup", (event) => {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+          emitMessage();
+        }
+      });
+      document.getElementById("submit").addEventListener("click", emitMessage);
+    </script>
+  </body>
+</html>
